@@ -14,17 +14,18 @@ for(let i=0; i<20; i++){
     )
 }
 
-
-
 app.get('/',(req, res )=>{
     res.send(users)//Mando una respuesta
 })
 
 app.get('/:id',(req, res )=>{
-    console.log(req.params.id)//el req puede acceder a los parametros que pase por la ruta
-    
+    users.forEach(element => {
+        if(element.id.localeCompare(req.params.id)=== 0)//el req puede acceder a los parametros que pase por la ruta
+        {
+            res.send(element) // con el res mando el dato que necesite como respuesta
+        }
+    });
 })
-
 
 app.post('/',(req,res)=>{
   console.log(req.body)  
