@@ -2,19 +2,55 @@ const express = require('express') //trae express desde el node_modules
 const casual = require('casual')
 const app = express();// Instancia de express
 app.use(express.json())
-const users =[]
 
-for(let i=0; i<20; i++){
-    users.push(
-        {
-            id: casual.uuid,
-            username: casual.username,
-            password: casual.password
-        }
-    )
-}
+const fs = require('fs');
+
+ class Archivo{
+         constructor(path){
+             this.path = path;
+         }
+    
+         async guardar(data){
+            data.forEach((element, i) => {
+                element.id = i+1;
+            });
+            fs.writeFile(this.path,JSON.stringify(data),(error) =>{
+                if(error){
+                    console.log(error);
+                    return
+                }
+                console.log("Grabado");
+            });                          
+         }
+    
+         async leer(){
+             try{
+                const data = await fs.promises.readFile(this.path,'utf-8')
+                return data;
+
+             }catch {
+                 return [];
+             }        
+         }
+    
+         async borrar(){
+                 fs.unlink(this.path, error =>{
+                     if (error) {
+                         console.log(error);
+                         return;
+                     }
+    
+                     console.log('eliminado');
+                 });
+         }
+     }
+
+let file = new Archivo('./productos.txt')
+const users =file.leer()
+
 
 app.get('/',(req, res )=>{
+
     res.send(users)//Mando una respuesta
 })
 
@@ -33,6 +69,7 @@ app.post('/',(req,res)=>{
   res.sendStatus(200)
 })
 
-app.listen('3030', ()=>{
+const server =app.listen('3030', ()=>{
     console.log("El servidor esta arriba")
 })
+server.on("error", error => console.log(`Error en el servidor ${error}`))
