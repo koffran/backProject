@@ -1,6 +1,6 @@
 const fs = require('fs');
 
- exports.a = class Archivo{
+ class Archivo{
          constructor(path){
              this.path = path;
          }
@@ -39,3 +39,4 @@ const fs = require('fs');
                  });
          }
      }
+     module.exports = Archivo

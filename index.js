@@ -5,7 +5,7 @@ app.use(express.json())
 
 const fs = require('fs');
 
-let file = new Archivo.a('productos.txt')
+let file = new Archivo('productos.txt')
 let users;
 let visitas = {
     "items": 0,
