@@ -3,14 +3,13 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
+
   "scripts": {
     "dev": "nodemon ./index.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "casual": "^1.6.2",
-    "express": "^4.17.1",
-    "moment": "^2.29.1"
+    "express": "^4.17.1"
   }
 }

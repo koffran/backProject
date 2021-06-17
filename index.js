@@ -1,72 +1,42 @@
 const express = require('express') //trae express desde el node_modules
-const casual = require('casual')
+const Archivo = require ('./src/files')
 const app = express();// Instancia de express
 app.use(express.json())
 
 const fs = require('fs');
 
- class Archivo{
-         constructor(path){
-             this.path = path;
-         }
-    
-         async guardar(data){
-            data.forEach((element, i) => {
-                element.id = i+1;
-            });
-            fs.writeFile(this.path,JSON.stringify(data),(error) =>{
-                if(error){
-                    console.log(error);
-                    return
-                }
-                console.log("Grabado");
-            });                          
-         }
-    
-         async leer(){
-             try{
-                const data = await fs.promises.readFile(this.path,'utf-8')
-                return data;
+let file = new Archivo.a('productos.txt')
+let users;
+let visitas = {
+    "items": 0,
+    "item": 0
+}
 
-             }catch {
-                 return [];
-             }        
-         }
-    
-         async borrar(){
-                 fs.unlink(this.path, error =>{
-                     if (error) {
-                         console.log(error);
-                         return;
-                     }
-    
-                     console.log('eliminado');
-                 });
-         }
-     }
+file.leer().then(val => users = JSON.parse(val))
 
-let file = new Archivo('./productos.txt')
-const users =file.leer()
-
-
-app.get('/',(req, res )=>{
-
-    res.send(users)//Mando una respuesta
-})
-
-app.get('/:id',(req, res )=>{
-    users.forEach(element => {
-        if(element.id.localeCompare(req.params.id)=== 0)//el req puede acceder a los parametros que pase por la ruta
-        {
-            res.send(element) // con el res mando el dato que necesite como respuesta
-        }
+app.get('/items',(req, res )=>{
+    let productsName= users.map(function (item){
+        return item.title
     });
+
+    let items ={
+        "items": productsName,
+        "cantidad": users.length
+    }
+
+    visitas.items++;
+    res.send(items)//Mando una respuesta
 })
 
-app.post('/',(req,res)=>{
-  console.log(req.body)  
-  users.unshift(req.body)
-  res.sendStatus(200)
+ app.get('/item-random',(req, res )=>{
+     let random = Math.floor(Math.random()* users.length)
+
+     visitas.item++
+     res.send(users[random])
+ })
+
+app.get('/visitas',(req,res)=>{
+    res.send(visitas)  
 })
 
 const server =app.listen('3030', ()=>{
