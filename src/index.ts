@@ -1,57 +1,58 @@
 import express from 'express'
+import Item from './items'
+import { getById } from './functions';
 
 const app = express();
 app.use(express.json());
 
-let gatos :any[] = [];
+let items:Item[] = [];
 
-app.get('/gatos', (req,res)=>{
-    res.json(gatos);
+app.get('/items', (req,res)=>{
+    items.length === 0? 
+    res.send({error: 'no hay productos cargados'})
+    :
+    res.json(items);
 })
 
-app.post('/gatos',(req,res)=>{
-    const {id, nombre, raza, edad} = req.body;
-    const gato = {      //al tener el mismo nombre no hace falta igualar. 
-        id,
-        nombre,
-        raza,
-        edad
+app.post('/items',(req,res)=>{
+    const {title, price, thumbnail} = req.body;
+    let item = new Item(title,price,thumbnail, items.length+1)
+    items.push(item);
+    res.sendStatus(201);
+})
+
+app.get('/items/:id', (req,res)=>{
+    const item = getById(items,parseInt(req.params.id))
+    if(items.length === 0){
+        res.status(404).send({error: 'producto no encontrado'})
     }
-    gatos.push(gato);
-    res.sendStatus(201)
+    res.json(item);
 })
 
-app.get('/gatos/:id', (req,res)=>{
-    const id = req.params.id
-    const gato = gatos.find(gato=> gato.id === id)
-    if(!gato){
+app.patch('/items/:id/thumbnail',(req,res)=>{
+    const item = getById(items,parseInt(req.params.id))
+    if(item === undefined){
         res.sendStatus(404);
     }
-    res.json(gato);
+    else
+    {
+        const {thumbnail} = req.body;
+        item.thumbnail = thumbnail;
+        res.sendStatus(204)
+    }
 })
 
-app.patch('/gatos/:id/raza',(req,res)=>{
-    const id = req.params.id
-    const gato = gatos.find(gato=> gato.id === id)
-    if(!gato){
+app.delete('/items/:id',(req,res)=>{
+    const id =parseInt(req.params.id);
+    const item = getById(items,id)
+    if(item === undefined){
         res.sendStatus(404);
     }
-    
-    const {raza} =req.body
-    gato.raza = raza
-    res.sendStatus(204)
-
-})
-
-app.delete('/gatos/:id',(req,res)=>{
-    const id = req.params.id
-    const gato = gatos.find(gato=> gato.id === id)
-    if(!gato){
-        res.sendStatus(404);
+    else
+    {
+        items = items.filter(item => item.id !== id)
+        res.sendStatus(200)
     }
-
-    gatos = gatos.filter(gato => gato.id !== id)
-    res.sendStatus(200)
 })
 
 
@@ -69,6 +70,7 @@ app.post('/users', (req,res)=>{
 
 
 
-app.listen(3333, ()=>{
-    console.log("Running on port 3333");
+const server = app.listen(8080, ()=>{
+    console.log("Running on port 8080");
 })
+server.on("error", error => console.log(`Error en el servidor ${error}`))
