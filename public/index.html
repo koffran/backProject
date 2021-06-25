@@ -67,26 +67,14 @@
             addItem(data)            
         })
 
-        const addItem = (data)=>{
-            let tr = document.createElement("tr");
-            itemsBody.appendChild(tr);
-            let thId = document.createElement('th');
-            thId.textContent=data.id;
-
-            let tdTitle = document.createElement('td');
-            tdTitle.textContent=data.title;
-
-            let tdPrice = document.createElement('td');
-            tdPrice.textContent=data.price;
-
-            let tdThumbnail = document.createElement('td');
-            tdThumbnail.textContent=data.thumbnail;
-
-            thId.scope="row"
-            tr.appendChild(thId)
-            tr.appendChild(tdTitle)
-            tr.appendChild(tdPrice)
-            tr.appendChild(tdThumbnail)
+        const addItem = (data)=>{           
+           itemsBody.insertAdjacentHTML("beforeend",
+           `<tr>
+                <th scope="row">${data.id}</th>
+                <td>${data.title}</td>
+                <td>${data.price}</td>
+                <td> <img src="${data.thumbnail}" alt="${data.thumbnail}"></td>
+            </tr>`)            
         }
     </script>
 </body>
