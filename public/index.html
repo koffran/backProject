@@ -19,7 +19,7 @@
         <label for="Thumbnail">Thumbnail</label>
         <input type="text" autocomplete="off" id="thumbnail" name="thumbnail">
 
-        <button>Add product</button>
+        <button class="btn-success">Add product</button>
     </form>
 
     <table class= "table table-striped table-bordered table-hover table-dark">
@@ -36,7 +36,7 @@
         <tbody id="itemsBody"></tbody>
     </table>
 
-    <form>
+    <form id="chatForm">
         <input type="text" autocomplete="off" id="mailChat" >
 
         <ul id="chat"></ul>
@@ -48,11 +48,18 @@
 
     <script>
         const socket =io();
+                //ADD ITEM ELEMENTS
         const form = document.getElementById('form');
         const title = document.getElementById('title');
         const price = document.getElementById('price');
         const thumbnail = document.getElementById('thumbnail');
         let itemsBody= document.getElementById('itemsBody')
+
+                //CHAT ELEMENTS
+        const chatForm = document.getElementById('chatForm');
+        const chat = document.getElementById('chat');
+        const message = document.getElementById('message');
+        const mailChat = document.getElementById('mailChat')
 
         //FORM ADD ITEMS
         form.addEventListener('submit', event=>{
@@ -81,6 +88,31 @@
 
 
         // FORM CHAT
+        chatForm.addEventListener('submit', event=>{
+            event.preventDefault();
+            
+            if(mailChat.value != "")
+            {
+                newMessage = {
+                    email: mailChat.value,
+                    time: Date.now(),
+                    msg: message.value
+                }
+
+                socket.emit('message sent', newMessage)
+            }
+            else
+            {  
+                alert('Ingrese su mail para poder enviar un mensaje ')
+
+            }
+        })
+
+        socket.on('print message',(msg)=>{
+            const newMsg = document.createElement('li');
+            newMsg.textContent = msg.email;
+            chat.appendChild(newMsg)
+        })
 
 
 

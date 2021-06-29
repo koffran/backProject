@@ -70,6 +70,11 @@ io.on('connection', (socket:Socket)=>{
 
         io.sockets.emit('addProduct',item)
     })
+
+    socket.on('message sent', (data:any)=>{
+        const {email, time, msg} = data;
+        io.sockets.emit('print message', data)
+    })
 })
 
 app.get('/items', (req:Request,res:Response)=>{
