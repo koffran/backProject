@@ -93,9 +93,11 @@
             
             if(mailChat.value != "")
             {
+                let d = new Date();
+                let now = d.getDate() +'/'+d.getMonth()+'/'+d.getFullYear() +' ' + d.getHours() + ':' + d.getMinutes() +':' + d.getSeconds()
                 newMessage = {
                     email: mailChat.value,
-                    time: Date.now(),
+                    time: now,
                     msg: message.value
                 }
 
@@ -109,9 +111,7 @@
         })
 
         socket.on('print message',(msg)=>{
-            const newMsg = document.createElement('li');
-            newMsg.textContent = msg.email;
-            chat.appendChild(newMsg)
+            addMessage(msg)
         })
 
 
@@ -127,6 +127,18 @@
                 <td>${data.price}</td>
                 <td> <img src="${data.thumbnail}" alt="${data.thumbnail}"></td>
             </tr>`)            
+        }
+
+        const addMessage = (data)=>{
+            chat.insertAdjacentHTML("beforeend",
+            `<li>
+                <p>
+                    <b style="color:blue">${data.email}</b>
+                     <span style="color: brown">[${data.time}]</span>:
+                     <span style="color: green; font-style:italic"> ${data.msg} </span>
+                </p>
+            </li>`
+            )
         }
     </script>
 </body>

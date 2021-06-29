@@ -1,5 +1,6 @@
 import express,{Request,Response} from 'express'
 import Item from './items'
+import Message from './messages'
 import { getById } from './functions';
 import router from './itemsRouter'
 import { NextFunction } from 'express-serve-static-core';
@@ -14,6 +15,7 @@ app.use(express.json());
 app.use(express.urlencoded({extended:true}))
 
 let items:Item[] = [];
+let messages:Message[] = [];
 
 
 app.post('/items',(req:Request,res:Response)=>{
@@ -73,7 +75,9 @@ io.on('connection', (socket:Socket)=>{
 
     socket.on('message sent', (data:any)=>{
         const {email, time, msg} = data;
-        io.sockets.emit('print message', data)
+        let message = new Message(email, time, msg);
+        messages.push(message)
+        io.sockets.emit('print message', message)
     })
 })
 
