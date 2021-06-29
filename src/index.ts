@@ -5,17 +5,23 @@ import { getById } from './functions';
 import router from './itemsRouter'
 import { NextFunction } from 'express-serve-static-core';
 import { Socket } from 'socket.io';
+import Archivo from './Archivos';
 
 let path = require('path')
 const app = require('express')();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
+const fs = require('fs');
+
 
 app.use(express.json());
 app.use(express.urlencoded({extended:true}))
 
 let items:Item[] = [];
 let messages:Message[] = [];
+let archivo:Archivo = new Archivo('messages.txt');
+
+
 
 
 app.post('/items',(req:Request,res:Response)=>{
@@ -64,11 +70,29 @@ io.on('connection', (socket:Socket)=>{
     console.log(socket.id);
     socket.emit('Items',items)
 
+
+    archivo.leer().then(val => {
+        if(val != []){
+            JSON.parse(val).forEach((element:any) => {
+                const {email,time,msg} = element;
+                let message = new Message(email, time, msg);
+                messages.push(message); 
+                io.sockets.emit('print message', message)
+            });
+        }
+        else{
+            console.log("no esta tentrandio");
+            
+        }
+        
+        
+    })  
+    
+
     socket.on('product created', (data:any)=>{
         const {title, price, thumbnail} = data;
         let item = new Item(title,price,thumbnail, items.length+1)
         items.push(item);
-        console.log(items)
 
         io.sockets.emit('addProduct',item)
     })
@@ -76,7 +100,8 @@ io.on('connection', (socket:Socket)=>{
     socket.on('message sent', (data:any)=>{
         const {email, time, msg} = data;
         let message = new Message(email, time, msg);
-        messages.push(message)
+        messages.push(message);
+        archivo.guardar(messages);
         io.sockets.emit('print message', message)
     })
 })
