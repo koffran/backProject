@@ -15,21 +15,15 @@ app.use(express.urlencoded({extended:true}))
 
 let items:Item[] = [];
 
-router.get('/items', (req,res)=>{
-    items.length === 0? 
-    res.send({error: 'no hay productos cargados'})
-    :
-    res.json(items);
-})
 
-router.post('/items',(req,res)=>{
+app.post('/items',(req:Request,res:Response)=>{
     const {title, price, thumbnail} = req.body;
     let item = new Item(title,price,thumbnail, items.length+1)
     items.push(item);
     res.sendStatus(201);
 })
 
-router.get('/items/:id', (req,res)=>{
+app.get('/items/:id', (req:Request,res:Response)=>{
     const item = getById(items,parseInt(req.params.id))
     if(items.length === 0){
         res.status(404).send({error: 'producto no encontrado'})
@@ -64,7 +58,6 @@ router.delete('/items/:id',(req,res)=>{
 })
 
 
-
 io.on('connection', (socket:Socket)=>{
     console.log(socket.id);
     socket.emit('Items',items)
@@ -73,9 +66,17 @@ io.on('connection', (socket:Socket)=>{
         const {title, price, thumbnail} = data;
         let item = new Item(title,price,thumbnail, items.length+1)
         items.push(item);
+        console.log(items)
 
         io.sockets.emit('addProduct',item)
     })
+})
+
+app.get('/items', (req:Request,res:Response)=>{
+    items.length === 0? 
+    res.send({error: 'no hay productos cargados'})
+    :
+    res.json(items);
 })
 
 

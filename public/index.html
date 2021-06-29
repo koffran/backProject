@@ -11,18 +11,19 @@
 <body>
     <form action="/items" id="form" enctype="application/x-www-form-urlencoded" method="POST">
         <label for="title">Title</label>
-        <input type="text" id="title" name="title">
+        <input type="text" autocomplete="off" id="title" name="title">
 
         <label for="price">Price</label>
-        <input type="text" id="price" name="price">
+        <input type="text" autocomplete="off" id="price" name="price">
 
         <label for="Thumbnail">Thumbnail</label>
-        <input type="text" id="thumbnail" name="thumbnail">
+        <input type="text" autocomplete="off" id="thumbnail" name="thumbnail">
 
         <button>Add product</button>
     </form>
 
     <table class= "table table-striped table-bordered table-hover table-dark">
+        <h2>List of items</h2>
         <caption>List of items</caption>
         <thead>
             <tr>
@@ -35,6 +36,16 @@
         <tbody id="itemsBody"></tbody>
     </table>
 
+    <form>
+        <input type="text" autocomplete="off" id="mailChat" >
+
+        <ul id="chat"></ul>
+
+        <input type="text" autocomplete="off" id="message">
+        <button class="btn-info">Send message</button>
+
+    </form>
+
     <script>
         const socket =io();
         const form = document.getElementById('form');
@@ -43,6 +54,7 @@
         const thumbnail = document.getElementById('thumbnail');
         let itemsBody= document.getElementById('itemsBody')
 
+        //FORM ADD ITEMS
         form.addEventListener('submit', event=>{
             event.preventDefault();
             //if(title.value && price.value && thumbnail.value)
@@ -66,6 +78,14 @@
         socket.on('addProduct', data =>{
             addItem(data)            
         })
+
+
+        // FORM CHAT
+
+
+
+
+        //FUNCTIONS
 
         const addItem = (data)=>{           
            itemsBody.insertAdjacentHTML("beforeend",
